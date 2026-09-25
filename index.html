@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHAMMAH MISSION SCHOOL PORTAL</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:linear-gradient(135deg,#064d1b,#0b7a2a,#e8f5e9);
+}
+
+.card{
+    width:100%;
+    max-width:430px;
+    background:#fff;
+    border-radius:22px;
+    padding:30px 22px;
+    text-align:center;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+
+.logo{
+    width:105px;
+    height:105px;
+    border-radius:50%;
+    border:4px solid #0b6b25;
+    margin-bottom:15px;
+    object-fit:contain;
+}
+
+h1{
+    color:#075d1c;
+    font-size:25px;
+}
+
+.portal{
+    color:#c99a16;
+    font-size:22px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+.subtitle{
+    color:#666;
+    margin:10px 0 25px;
+}
+
+.roles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.role{
+    border:2px solid #d8eadc;
+    background:#f4faf5;
+    color:#075d1c;
+    border-radius:15px;
+    padding:18px 8px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.role:active{
+    transform:scale(.98);
+}
+
+.role.active{
+    background:#075d1c;
+    color:#fff;
+}
+
+.login{
+    display:none;
+    margin-top:22px;
+    text-align:left;
+}
+
+.login.show{
+    display:block;
+}
+
+.login h2{
+    text-align:center;
+    color:#075d1c;
+    margin-bottom:15px;
+    font-size:19px;
+}
+
+label{
+    display:block;
+    margin:12px 0 6px;
+    font-weight:bold;
+}
+
+input{
+    width:100%;
+    padding:13px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+}
+
+button.loginBtn{
+    width:100%;
+    margin-top:20px;
+    padding:14px;
+    border:0;
+    border-radius:10px;
+    background:#075d1c;
+    color:#fff;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.message{
+    text-align:center;
+    margin-top:12px;
+    min-height:20px;
+    color:#c62828;
+    font-weight:bold;
+}
+
+.footer{
+    margin-top:22px;
+    font-size:12px;
+    color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div style="
+        width:105px;
+        height:105px;
+        border-radius:50%;
+        border:4px solid #075d1c;
+        margin:0 auto 15px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#075d1c;
+        font-weight:bold;
+        font-size:13px;
+    ">
+        SMS
+    </div>
+
+    <h1>SHAMMAH MISSION SCHOOL</h1>
+
+    <div class="portal">
+        PORTAL
+    </div>
+
+    <div class="subtitle">
+        Results Management System
+    </div>
+
+    <div class="roles">
+
+        <button
+            type="button"
+            class="role"
+            id="director"
+            onclick="chooseRole('director')">
+            👨‍💼<br><br>
+            DIRECTOR / ADMIN
+        </button>
+
+        <button
+            type="button"
+            class="role"
+            id="teacher"
+            onclick="chooseRole('teacher')">
+            👨‍🏫<br><br>
+            TEACHER
+        </button>
+
+    </div>
+
+    <div class="login" id="loginBox">
+
+        <h2 id="loginTitle">LOGIN</h2>
+
+        <label>Username</label>
+
+        <input
+            type="text"
+            id="username"
+            placeholder="Enter username"
+        >
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter password"
+        >
+
+        <button
+            type="button"
+            class="loginBtn"
+            onclick="login()">
+            LOGIN
+        </button>
+
+        <div class="message" id="message"></div>
+
+    </div>
+
+    <div class="footer">
+        Marakwet West, Kapsowar
+    </div>
+
+</div>
+
+<script>
+
+let selectedRole = "";
+
+function chooseRole(role){
+
+    selectedRole = role;
+
+    document.getElementById("director")
+        .classList.remove("active");
+
+    document.getElementById("teacher")
+        .classList.remove("active");
+
+    if(role === "director"){
+
+        document.getElementById("director")
+            .classList.add("active");
+
+        document.getElementById("loginTitle")
+            .textContent = "DIRECTOR / ADMIN LOGIN";
+
+    }
+
+    if(role === "teacher"){
+
+        document.getElementById("teacher")
+            .classList.add("active");
+
+        document.getElementById("loginTitle")
+            .textContent = "TEACHER LOGIN";
+
+    }
+
+    document.getElementById("loginBox")
+        .classList.add("show");
+
+    document.getElementById("message")
+        .textContent = "";
+
+    document.getElementById("username").focus();
+}
+
+
+function login(){
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("message");
+
+    if(!selectedRole){
+
+        message.textContent =
+            "Select Director/Admin or Teacher first.";
+
+        return;
+    }
+
+    if(!username || !password){
+
+        message.textContent =
+            "Enter username and password.";
+
+        return;
+    }
+
+    if(
+        selectedRole === "director" &&
+        username === "admin" &&
+        password === "admin123"
+    ){
+
+        sessionStorage.setItem(
+            "shammahRole",
+            "director"
+        );
+
+        sessionStorage.setItem(
+            "shammahLoggedIn",
+            "true"
+        );
+
+        window.location.href = "director.html";
+
+        return;
+    }
+
+    if(
+        selectedRole === "teacher" &&
+        username === "teacher" &&
+        password === "teacher123"
+    ){
+
+        sessionStorage.setItem(
+            "shammahRole",
+            "teacher"
+        );
+
+        sessionStorage.setItem(
+            "shammahLoggedIn",
+            "true"
+        );
+
+        window.location.href = "teacher.html";
+
+        return;
+    }
+
+    message.textContent =
+        "Invalid username or password.";
+}
+
+</script>
+
+</body>
+          </html>
