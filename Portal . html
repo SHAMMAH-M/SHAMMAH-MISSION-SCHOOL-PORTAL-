@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shammah Mission School Portal</title>
+
+<style>
+body{margin:0;font-family:Arial;background:#f1f8f4;color:#173b2a}
+header{background:#087f3f;color:white;text-align:center;padding:25px}
+main{padding:20px;max-width:700px;margin:auto}
+button{display:block;width:100%;padding:16px;margin:12px 0;border:0;border-radius:8px;background:#087f3f;color:white;font-size:16px}
+.logout{background:#a51d2d}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>DIRECTOR / ADMIN PORTAL</p>
+</header>
+
+<main>
+
+<button onclick="go('students.html')">
+👨‍🎓 STUDENTS
+</button>
+
+<button onclick="go('teacher.html')">
+👩‍🏫 TEACHERS
+</button>
+
+<button onclick="go('results.html')">
+📝 RESULTS
+</button>
+
+<button onclick="go('analysis.html')">
+📊 ANALYSIS
+</button>
+
+<button onclick="go('reportcards.html')">
+📄 REPORT CARDS
+</button>
+
+<button onclick="go('settings.html')">
+⚙️ SCHOOL SETTINGS
+</button>
+
+<button class="logout" onclick="logout()">
+🚪 LOGOUT
+</button>
+
+</main>
+
+<script>
+
+function go(page){
+window.location.href=page;
+}
+
+function logout(){
+sessionStorage.clear();
+window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
