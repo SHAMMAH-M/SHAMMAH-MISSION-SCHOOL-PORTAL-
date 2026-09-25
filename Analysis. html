@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Results Analysis - Shammah Mission School</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#f1f8f4;color:#173b2a}
+header{background:#087f3f;color:white;text-align:center;padding:18px}
+main{padding:15px;max-width:1200px;margin:auto}
+.card{background:white;padding:18px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 8px #0002}
+select{padding:11px;width:100%;margin:6px 0 12px;border:1px solid #bbb;border-radius:6px}
+button{padding:11px 16px;border:0;border-radius:6px;background:#087f3f;color:white;margin:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{text-align:center;padding:18px;background:#eef8f1;border-radius:8px}
+.stat b{display:block;font-size:28px;margin-top:8px}
+table{width:100%;border-collapse:collapse;margin-top:15px}
+th,td{border:1px solid #ddd;padding:9px}
+th{background:#087f3f;color:white}
+@media(max-width:700px){table{font-size:12px}}
+@media print{
+button,select{display:none}
+.card{box-shadow:none}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>Academic Results Analysis</p>
+</header>
+
+<main>
+
+<div class="card">
+
+<h2>Analysis Selection</h2>
+
+<select id="year">
+<option>2026</option>
+<option>2027</option>
+<option>2028</option>
+</select>
+
+<select id="term">
+<option>Term 1</option>
+<option>Term 2</option>
+<option>Term 3</option>
+</select>
+
+<select id="grade">
+<option value="">All Grades</option>
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<button onclick="analyse()">GENERATE ANALYSIS</button>
+<button onclick="window.print()">PRINT ANALYSIS</button>
+
+</div>
+
+<div id="report"></div>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+let db=JSON.parse(localStorage.getItem(KEY))||{
+students:[],
+results:[]
+};
+
+function analyse(){
+
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+let grade=document.getElementById("grade").value;
+
+let results=db.results.filter(r=>
+r.year==year &&
+r.term==term &&
+r.published===true &&
+(!grade || r.grade===grade)
+);
+
+if(results.length===0){
+
+document.getElementById("report").innerHTML=
+'<div class="card"><h3>No published results found.</h3></div>';
+
+return;
+}
+
+
+/* GENERAL MEAN */
+
+let total=0;
+
+results.forEach(r=>{
+total+=Number(r.marks);
+});
+
+let generalMean=(total/results.length).toFixed(2);
+
+
+/* GRADING DISTRIBUTION */
+
+let EE=0,ME=0,AE=0,BE=0;
+
+results.forEach(r=>{
+
+let g=r.gradeResult;
+
+if(g==="EE")EE++;
+else if(g==="ME")ME++;
+else if(g==="AE")AE++;
+else if(g==="BE")BE++;
+
+});
+
+
+/* SUBJECT ANALYSIS */
+
+let subjects={};
+
+results.forEach(r=>{
+
+if(!subjects[r.subject]){
+subjects[r.subject]={
+total:0,
+count:0,
+EE:0,
+ME:0,
+AE:0,
+BE:0
+};
+}
+
+subjects[r.subject].total+=Number(r.marks);
+subjects[r.subject].count++;
+
+if(r.gradeResult==="EE")subjects[r.subject].EE++;
+if(r.gradeResult==="ME")subjects[r.subject].ME++;
+if(r.gradeResult==="AE")subjects[r.subject].AE++;
+if(r.gradeResult==="BE")subjects[r.subject].BE++;
+
+});
+
+
+let subjectRows="";
+
+let subjectMeans=[];
+
+Object.keys(subjects).forEach(subject=>{
+
+let s=subjects[subject];
+
+let mean=(s.total/s.count).toFixed(2);
+
+subjectMeans.push({
+subject:subject,
+mean:Number(mean)
+});
+
+subjectRows+=`
+
+<tr>
+<td>${subject}</td>
+<td>${s.count}</td>
+<td>${mean}</td>
+<td>${s.EE}</td>
+<td>${s.ME}</td>
+<td>${s.AE}</td>
+<td>${s.BE}</td>
+</tr>
+
+`;
+
+});
+
+
+/* LEADING / LEAST SUBJECT */
+
+subjectMeans.sort((a,b)=>b.mean-a.mean);
+
+let leading=subjectMeans[0];
+
+let least=subjectMeans[subjectMeans.length-1];
+
+
+let html=`
+
+<div class="card">
+
+<h2>
+Analysis: ${grade || "All Grades"}
+</h2>
+
+<p>
+Academic Year: <b>${year}</b> |
+Term: <b>${term}</b>
+</p>
+
+</div>
+
+
+<div class="grid">
+
+<div class="stat">
+Total Entries
+<b>${results.length}</b>
+</div>
+
+<div class="stat">
+General Mean
+<b>${generalMean}</b>
+</div>
+
+<div class="stat">
+EE
+<b>${EE}</b>
+</div>
+
+<div class="stat">
+ME
+<b>${ME}</b>
+</div>
+
+<div class="stat">
+AE
+<b>${AE}</b>
+</div>
+
+<div class="stat">
+BE
+<b>${BE}</b>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Subject Performance</h2>
+
+<table>
+
+<tr>
+<th>Subject</th>
+<th>Entries</th>
+<th>Mean</th>
+<th>EE</th>
+<th>ME</th>
+<th>AE</th>
+<th>BE</th>
+</tr>
+
+${subjectRows}
+
+</table>
+
+</div>
+
+
+<div class="card">
+
+<h2>Performance Summary</h2>
+
+<p>
+<b>Leading Subject:</b>
+${leading.subject} — Mean ${leading.mean}
+</p>
+
+<p style="margin-top:10px">
+<b>Least Performing Subject:</b>
+${least.subject} — Mean ${least.mean}
+</p>
+
+</div>
+
+`;
+
+document.getElementById("report").innerHTML=html;
+
+}
+
+</script>
+
+</body>
+</html>
