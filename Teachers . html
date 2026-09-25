@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teachers - Shammah Mission School</title>
+<style>
+body{font-family:Arial;margin:0;background:#f1f8f4;color:#173b2a}
+header{background:#087f3f;color:white;padding:20px;text-align:center}
+main{max-width:900px;margin:auto;padding:15px}
+.card{background:white;padding:15px;margin:12px 0;border-radius:10px;box-shadow:0 2px 8px #bbb}
+input,select,button{width:100%;padding:11px;margin:6px 0;box-sizing:border-box}
+button{border:0;border-radius:6px;background:#087f3f;color:white}
+.red{background:#a51d2d}
+.blue{background:#1769aa}
+.allocation{background:#eef7f1;padding:8px;margin:5px 0;border-radius:5px}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>DIRECTOR — TEACHER MANAGEMENT</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Add Teacher</h2>
+
+<input id="name" placeholder="Teacher name">
+<input id="phone" placeholder="Phone number">
+
+<button onclick="addTeacher()">ADD TEACHER</button>
+</div>
+
+<div class="card">
+<h2>Teacher Allocation</h2>
+
+<select id="teacherSelect"></select>
+
+<select id="subject">
+<option>Agriculture</option>
+<option>Mathematics</option>
+<option>English</option>
+<option>Kiswahili</option>
+<option>Integrated Science</option>
+<option>Pre/Tech</option>
+<option>CRE</option>
+<option>SST</option>
+<option>C/A</option>
+</select>
+
+<select id="grade">
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<button onclick="allocate()">ADD ALLOCATION</button>
+</div>
+
+<div id="list"></div>
+
+<button class="blue" onclick="location.href='portal.html'">
+← BACK TO DIRECTOR PORTAL
+</button>
+
+<button class="red" onclick="logout()">LOGOUT</button>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+function getDB(){
+let db=JSON.parse(localStorage.getItem(KEY)||"{}");
+
+if(!db.teachers) db.teachers=[];
+
+localStorage.setItem(KEY,JSON.stringify(db));
+return db;
+}
+
+function saveDB(db){
+localStorage.setItem(KEY,JSON.stringify(db));
+}
+
+function addTeacher(){
+
+let name=document.getElementById("name").value.trim();
+let phone=document.getElementById("phone").value.trim();
+
+if(!name){
+alert("Enter teacher name");
+return;
+}
+
+let db=getDB();
+
+db.teachers.push({
+name:name,
+phone:phone,
+allocations:[]
+});
+
+saveDB(db);
+
+document.getElementById("name").value="";
+document.getElementById("phone").value="";
+
+render();
+
+alert("Teacher added successfully.");
+}
+
+function allocate(){
+
+let teacherIndex=document.getElementById("teacherSelect").value;
+
+if(teacherIndex===""){
+alert("Select a teacher");
+return;
+}
+
+let db=getDB();
+
+let teacher=db.teachers[teacherIndex];
+
+if(!teacher.allocations) teacher.allocations=[];
+
+let subject=document.getElementById("subject").value;
+let grade=document.getElementById("grade").value;
+
+let exists=teacher.allocations.some(
+a=>a.subject===subject && a.grade===grade
+);
+
+if(exists){
+alert("This allocation already exists.");
+return;
+}
+
+teacher.allocations.push({
+subject:subject,
+grade:grade
+});
+
+saveDB(db);
+
+render();
+
+alert("Allocation added.");
+}
+
+function removeAllocation(t,a){
+
+let db=getDB();
+
+if(confirm("Remove this allocation?")){
+db.teachers[t].allocations.splice(a,1);
+saveDB(db);
+render();
+}
+}
+
+function editTeacher(i){
+
+let db=getDB();
+
+let teacher=db.teachers[i];
+
+let name=prompt("Teacher name:",teacher.name);
+if(name===null)return;
+
+let phone=prompt("Phone number:",teacher.phone||"");
+if(phone===null)return;
+
+teacher.name=name.trim();
+teacher.phone=phone.trim();
+
+saveDB(db);
+render();
+}
+
+function removeTeacher(i){
+
+let db=getDB();
+
+if(confirm("Remove "+db.teachers[i].name+"?")){
+db.teachers.splice(i,1);
+saveDB(db);
+render();
+}
+}
+
+function render(){
+
+let db=getDB();
+
+let select=document.getElementById("teacherSelect");
+
+select.innerHTML='<option value="">Select Teacher</option>';
+
+db.teachers.forEach((t,i)=>{
+select.innerHTML+=
+`<option value="${i}">${t.name}</option>`;
+});
+
+let list=document.getElementById("list");
+
+list.innerHTML="<h2>Teachers</h2>";
+
+db.teachers.forEach((t,i)=>{
+
+if(!t.allocations)t.allocations=[];
+
+let html=`
+<div class="card">
+<h3>${t.name}</h3>
+<p>Phone: ${t.phone||"Not provided"}</p>
+
+<button onclick="editTeacher(${i})">
+EDIT TEACHER
+</button>
+
+<h4>Allocations</h4>
+`;
+
+if(t.allocations.length===0){
+html+="<p>No subject allocation.</p>";
+}
+
+t.allocations.forEach((a,j)=>{
+html+=`
+<div class="allocation">
+${a.subject} — ${a.grade}
+<button class="red"
+onclick="removeAllocation(${i},${j})">
+REMOVE
+</button>
+</div>
+`;
+});
+
+html+=`
+<button class="red" onclick="removeTeacher(${i})">
+REMOVE TEACHER
+</button>
+</div>
+`;
+
+list.innerHTML+=html;
+
+});
+
+}
+
+function logout(){
+sessionStorage.clear();
+location.href="index.html";
+}
+
+if(sessionStorage.getItem("shammahLoggedIn")!=="true" ||
+sessionStorage.getItem("shammahRole")!=="director"){
+location.href="index.html";
+}
+
+render();
+
+</script>
+
+</body>
+</html>
