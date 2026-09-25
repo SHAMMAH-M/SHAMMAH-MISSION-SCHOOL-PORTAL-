@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Director | SHAMMAH MISSION SCHOOL</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f1f6f2;
+    color:#222;
+}
+
+header{
+    background:#075d1c;
+    color:white;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+header h1{font-size:20px}
+header small{display:block;margin-top:4px;opacity:.85}
+
+.logout{
+    background:#c62828;
+    color:white;
+    border:0;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.nav{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.nav button{
+    border:0;
+    padding:11px 14px;
+    border-radius:8px;
+    background:white;
+    color:#075d1c;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 2px 7px #ccc;
+}
+
+.nav button.active{
+    background:#075d1c;
+    color:white;
+}
+
+.section{display:none}
+.section.active{display:block}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px #ddd;
+}
+
+.card h3{
+    color:#666;
+    font-size:14px;
+}
+
+.number{
+    color:#075d1c;
+    font-size:30px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.panel{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px #ddd;
+    margin-bottom:20px;
+}
+
+.panel h2{
+    color:#075d1c;
+    margin-bottom:15px;
+}
+
+button.action{
+    background:#075d1c;
+    color:white;
+    border:0;
+    padding:11px 15px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:15px;
+}
+
+button.danger{
+    background:#c62828;
+    color:white;
+    border:0;
+    padding:8px 11px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+button.edit{
+    background:#e0a800;
+    color:white;
+    border:0;
+    padding:8px 11px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:650px;
+}
+
+th,td{
+    padding:11px;
+    border-bottom:1px solid #ddd;
+    text-align:left;
+}
+
+th{
+    background:#eaf4ec;
+    color:#075d1c;
+}
+
+.empty{
+    color:#777;
+    padding:20px;
+    text-align:center;
+}
+
+input,select{
+    width:100%;
+    padding:11px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    margin-top:6px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+}
+
+.form-group label{
+    font-weight:bold;
+    font-size:14px;
+}
+
+.info{
+    background:#edf7ef;
+    border-left:4px solid #075d1c;
+    padding:14px;
+    margin-top:15px;
+    border-radius:5px;
+}
+
+@media(max-width:600px){
+    header h1{font-size:16px}
+    .container{padding:12px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>SHAMMAH MISSION SCHOOL</h1>
+        <small>DIRECTOR / ADMIN PORTAL</small>
+    </div>
+
+    <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="nav">
+
+        <button class="active" onclick="showSection('overview',this)">
+            Overview
+        </button>
+
+        <button onclick="showSection('students',this)">
+            Students
+        </button>
+
+        <button onclick="showSection('teachers',this)">
+            Teachers
+        </button>
+
+        <button onclick="showSection('subjects',this)">
+            Subjects
+        </button>
+
+        <button onclick="showSection('results',this)">
+            Results
+        </button>
+
+        <button onclick="showSection('analysis',this)">
+            Analysis
+        </button>
+
+        <button onclick="showSection('reports',this)">
+            Report Cards
+        </button>
+
+        <button onclick="showSection('settings',this)">
+            School Settings
+        </button>
+
+    </div>
+
+
+    <!-- OVERVIEW -->
+
+    <section id="overview" class="section active">
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <div class="number" id="totalStudents">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Teachers</h3>
+                <div class="number" id="totalTeachers">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Subjects</h3>
+                <div class="number" id="totalSubjects">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Results</h3>
+                <div class="number" id="totalResults">0</div>
+            </div>
+
+        </div>
+
+        <div class="panel" style="margin-top:20px">
+
+            <h2>School Information</h2>
+
+            <p><b>School:</b>
+                <span id="schoolName"></span>
+            </p>
+
+            <p><b>Location:</b>
+                <span id="schoolLocation"></span>
+            </p>
+
+            <p><b>Academic Year:</b>
+                <span id="academicYear"></span>
+            </p>
+
+            <p><b>Current Term:</b>
+                <span id="currentTerm"></span>
+            </p>
+
+            <p><b>UPI:</b>
+                <span id="schoolUPI"></span>
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- STUDENTS -->
+
+    <section id="students" class="section">
+
+        <div class="panel">
+
+            <h2>Student Management</h2>
+
+            <button class="action" onclick="addStudent()">
+                + Add Student
+            </button>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Admission No.</th>
+                            <th>Student Name</th>
+                            <th>Gender</th>
+                            <th>Grade</th>
+                            <th>Parent Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="studentTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TEACHERS -->
+
+    <section id="teachers" class="section">
+
+        <div class="panel">
+
+            <h2>Teacher Management</h2>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Teacher</th>
+                            <th>Phone</th>
+                            <th>Allocated Subjects / Classes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="teacherTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SUBJECTS -->
+
+    <section id="subjects" class="section">
+
+        <div class="panel">
+
+            <h2>Subject Management</h2>
+
+            <button class="action" onclick="addSubject()">
+                + Add Subject
+            </button>
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Subject</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="subjectTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESULTS -->
+
+    <section id="results" class="section">
+
+        <div class="panel">
+
+            <h2>Results Management</h2>
+
+            <div class="info">
+                The Director will be able to select academic year,
+                term, grade and subject, edit marks, save results
+                and publish results from this section.
+            </div>
+
+            <p style="margin-top:15px">
+                Results entered by teachers will also appear here
+                for Director review and editing.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ANALYSIS -->
+
+    <section id="analysis" class="section">
+
+        <div class="panel">
+
+            <h2>Results Analysis</h2>
+
+            <div class="cards">
+
+                <div class="card">
+                    <h3>EE</h3>
+                    <div class="number" id="ee">0</div>
+                </div>
+
+                <div class="card">
+                    <h3>ME</h3>
+                    <div class="number" id="me">0</div>
+                </div>
+
+                <div class="card">
+                    <h3>AE</h3>
+                    <div class="number" id="ae">0</div>
+                </div>
+
+                <div class="card">
+                    <h3>BE</h3>
+                    <div class="number" id="be">0</div>
+                </div>
+
+            </div>
+
+            <div class="info">
+                Subject means, general mean, leading subject,
+                least performed subject and performance graphs
+                will be calculated from the saved results.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- REPORTS -->
+
+    <section id="reports" class="section">
+
+        <div class="panel">
+
+            <h2>Report Cards</h2>
+
+            <div class="info">
+
+                Report cards will contain the school name,
+                student details, subjects, marks, grades,
+                comments, overall performance, graphs,
+                class teacher remarks and head teacher remarks.
+
+                <br><br>
+
+                The Director will be able to print one student,
+                selected students or an entire class in admission
+                number order.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SETTINGS -->
+
+    <section id="settings" class="section">
+
+        <div class="panel">
+
+            <h2>School Settings</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>School Name</label>
+                    <input id="setName">
+                </div>
+
+                <div class="form-group">
+                    <label>School UPI</label>
+                    <input id="setUPI">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input id="setEmail">
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input id="setLocation">
+                </div>
+
+                <div class="form-group">
+                    <label>Academic Year</label>
+                    <input id="setYear">
+                </div>
+
+                <div class="form-group">
+
+                    <label>Current Term</label>
+
+                    <select id="setTerm">
+
+                        <option>Term 1</option>
+                        <option>Term 2</option>
+                        <option>Term 3</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <button
+                class="action"
+                style="margin-top:18px"
+                onclick="saveSettings()">
+
+                Save School Settings
+
+            </button>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+const DB_KEY =
+"SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+
+function getDatabase(){
+
+    let saved =
+        localStorage.getItem(DB_KEY);
+
+    if(saved){
+
+        return JSON.parse(saved);
+
+    }
+
+    const db = {
+
+        school:{
+            name:"SHAMMAH MISSION SCHOOL",
+            portalName:"SHAMMAH MISSION SCHOOL PORTAL",
+            UPI:"",
+            email:"aicshammahschool2025@gmail.com",
+            location:"Marakwet West, Kapsowar",
+            logo:"",
+            openingDate:"",
+            closingDate:""
+        },
+
+        users:[
+            {
+                username:"admin",
+                password:"admin123",
+                role:"director",
+                name:"Director"
+            },
+            {
+                username:"teacher",
+                password:"teacher123",
+                role:"teacher",
+                name:"Mr Kim"
+            }
+        ],
+
+        classes:[
+            "Grade 7",
+            "Grade 8",
+            "Grade 9"
+        ],
+
+        subjects:[
+            "Agriculture",
+            "Integrated Science",
+            "Mathematics",
+            "English",
+            "Kiswahili",
+            "SST",
+            "CRE",
+            "Pre/Tech",
+            "C/A"
+        ],
+
+        teachers:[],
+
+        students:[],
+
+        results:[]
+
+    };
+
+    localStorage.setItem(
+        DB_KEY,
+        JSON.stringify(db)
+    );
+
+    return db;
+}
+
+
+function saveDatabase(db){
+
+    localStorage.setItem(
+        DB_KEY,
+        JSON.stringify(db)
+    );
+
+}
+
+
+function showSection(id,button){
+
+    document.querySelectorAll(".section")
+        .forEach(function(section){
+
+            section.classList.remove("active");
+
+        });
+
+    document.querySelectorAll(".nav button")
+        .forEach(function(btn){
+
+            btn.classList.remove("active");
+
+        });
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    button.classList.add("active");
+
+    refresh();
+
+}
+
+
+function addStudent(){
+
+    const admission =
+        prompt("Enter admission number:");
+
+    if(!admission)return;
+
+    const name =
+        prompt("Enter student name:");
+
+    if(!name)return;
+
+    const grade =
+        prompt(
+            "Enter grade: Grade 7, Grade 8 or Grade 9"
+        );
+
+    if(
+        grade !== "Grade 7" &&
+        grade !== "Grade 8" &&
+        grade !== "Grade 9"
+    ){
+
+        alert("Please enter Grade 7, Grade 8 or Grade 9.");
+
+        return;
+    }
+
+    const gender =
+        prompt("Enter gender:");
+
+    const phone =
+        prompt("Enter parent/guardian phone:");
+
+    const db = getDatabase();
+
+    if(
+        db.students.some(
+            s => s.admission === admission
+        )
+    ){
+
+        alert("That admission number already exists.");
+
+        return;
+    }
+
+    db.students.push({
+
+        admission:admission,
+
+        name:name,
+
+        gender:gender || "",
+
+        grade:grade,
+
+        parentPhone:phone || ""
+
+    });
+
+    saveDatabase(db);
+
+    refresh();
+
+    alert("Student added successfully.");
+
+}
+
+
+function editStudent(index){
+
+    const db = getDatabase();
+
+    const student =
+        db.students[index];
+
+    const name =
+        prompt(
+            "Edit student name:",
+            student.name
+        );
+
+    if(name === null)return;
+
+    const gender =
+        prompt(
+            "Edit gender:",
+            student.gender
+        );
+
+    if(gender === null)return;
+
+    const phone =
+        prompt(
+            "Edit parent/guardian phone:",
+            student.parentPhone
+        );
+
+    if(phone === null)return;
+
+    student.name = name;
+    student.gender = gender;
+    student.parentPhone = phone;
+
+    saveDatabase(db);
+
+    refresh();
+
+}
+
+
+function removeStudent(index){
+
+    const db = getDatabase();
+
+    const student =
+        db.students[index];
+
+    const confirmDelete =
+        confirm(
+            "Remove " +
+            student.name +
+            " individually?"
+        );
+
+    if(!confirmDelete)return;
+
+    db.students.splice(index,1);
+
+    saveDatabase(db);
+
+    refresh();
+
+}
+
+
+function addSubject(){
+
+    const subject =
+        prompt("Enter new subject:");
+
+    if(!subject)return;
+
+    const db = getDatabase();
+
+    if(
+        db.subjects
+        .map(s => s.toLowerCase())
+        .includes(subject.toLowerCase())
+    ){
+
+        alert("Subject already exists.");
+
+        return;
+    }
+
+    db.subjects.push(subject);
+
+    saveDatabase(db);
+
+    refresh();
+
+}
+
+
+function removeSubject(index){
+
+    const db = getDatabase();
+
+    const subject =
+        db.subjects[index];
+
+    if(
+        !confirm(
+            "Remove subject " +
+            subject +
+            "?"
+        )
+    )return;
+
+    db.subjects.splice(index,1);
+
+    saveDatabase(db);
+
+    refresh();
+
+}
+
+
+function saveSettings(){
+
+    const db = getDatabase();
+
+    db.school.name =
+        document.getElementById("setName").value;
+
+    db.school.UPI =
+        document.getElementById("setUPI").value;
+
+    db.school.email =
+        document.getElementById("setEmail").value;
+
+    db.school.location =
+        document.getElementById("setLocation").value;
+
+    db.currentAcademicYear =
+        document.getElementById("setYear").value;
+
+    db.currentTerm =
+        document.getElementById("setTerm").value;
+
+    saveDatabase(db);
+
+    refresh();
+
+    alert("School settings saved.");
+
+}
+
+
+function refresh(){
+
+    const db = getDatabase();
+
+    document.getElementById("totalStudents")
+        .textContent =
+        db.students.length;
+
+    document.getElementById("totalTeachers")
+        .textContent =
+        db.teachers.length;
+
+    document.getElementById("totalSubjects")
+        .textContent =
+        db.subjects.length;
+
+    document.getElementById("totalResults")
+        .textContent =
+        db.results.length;
+
+    document.getElementById("schoolName")
+        .textContent =
+        db.school.name;
+
+    document.getElementById("schoolLocation")
+        .textContent =
+        db.school.location;
+
+    document.getElementById("academicYear")
+        .textContent =
+        db.currentAcademicYear;
+
+    document.getElementById("currentTerm")
+        .textContent =
+        db.currentTerm;
+
+    document.getElementById("schoolUPI")
+        .textContent =
+        db.school.UPI || "Not set";
+
+
+    /* STUDENTS */
+
+    const studentTable =
+        document.getElementById("studentTable");
+
+    studentTable.innerHTML = "";
+
+    if(db.students.length === 0){
+
+        studentTable.innerHTML =
+            '<tr><td colspan="6" class="empty">No students added yet.</td></tr>';
+
+    }else{
+
+        db.students.forEach(function(student,index){
+
+            studentTable.innerHTML += `
+
+            <tr>
+
+                <td>${escapeHTML(student.admission)}</td>
+
+                <td>${escapeHTML(student.name)}</td>
+
+                <td>${escapeHTML(student.gender)}</td>
+
+                <td>${escapeHTML(student.grade)}</td>
+
+                <td>${escapeHTML(student.parentPhone)}</td>
+
+                <td>
+
+                    <button
+                        class="edit"
+                        onclick="editStudent(${index})">
+                        Edit
+                    </button>
+
+                    <button
+                        class="danger"
+                        onclick="removeStudent(${index})">
+                        Remove
+                    </button>
+
+                </td>
+
+            </tr>
+
+            `;
+
+        });
+
+    }
+
+
+    /* SUBJECTS */
+
+    const subjectTable =
+        document.getElementById("subjectTable");
+
+    subjectTable.innerHTML = "";
+
+    db.subjects.forEach(function(subject,index){
+
+        subjectTable.innerHTML += `
+
+        <tr>
+
+            <td>${index + 1}</td>
+
+            <td>${escapeHTML(subject)}</td>
+
+            <td>
+
+                <button
+                    class="danger"
+                    onclick="removeSubject(${index})">
+                    Remove
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+
+    });
+
+
+    /* TEACHERS */
+
+    const teacherTable =
+        document.getElementById("teacherTable");
+
+    teacherTable.innerHTML = "";
+
+    if(db.teachers.length === 0){
+
+        teacherTable.innerHTML =
+            '<tr><td colspan="3" class="empty">Teacher allocations will appear here.</td></tr>';
+
+    }else{
+
+        db.teachers.forEach(function(teacher){
+
+            teacherTable.innerHTML += `
+
+            <tr>
+
+                <td>${escapeHTML(teacher.name)}</td>
+
+                <td>${escapeHTML(teacher.phone || "")}</td>
+
+                <td>
+                    ${(teacher.allocations || [])
+                    .map(escapeHTML)
+                    .join("<br>")}
+                </td>
+
+            </
