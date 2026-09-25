@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Students - Shammah Mission School</title>
+<style>
+body{font-family:Arial;margin:0;background:#f2f8f4;color:#173b2a}
+header{background:#087f3f;color:white;padding:20px;text-align:center}
+main{padding:15px;max-width:1100px;margin:auto}
+.card{background:white;padding:18px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 8px #0002}
+input,select{padding:10px;width:100%;margin:6px 0 12px;border:1px solid #bbb;border-radius:6px}
+button{padding:10px 15px;border:0;border-radius:6px;background:#087f3f;color:white;margin:3px;cursor:pointer}
+.danger{background:#b42318}
+table{width:100%;border-collapse:collapse;background:white}
+th,td{border:1px solid #ddd;padding:9px}
+th{background:#087f3f;color:white}
+@media(max-width:700px){table{font-size:12px}}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>Student Management</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Add Student</h2>
+
+<input id="adm" placeholder="Admission Number">
+<input id="name" placeholder="Student Name">
+
+<select id="gender">
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+</select>
+
+<select id="grade">
+<option value="">Select Grade</option>
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<input id="parent" placeholder="Parent / Guardian Phone">
+
+<button onclick="addStudent()">ADD STUDENT</button>
+</div>
+
+<div class="card">
+<h2>Students</h2>
+
+<select id="filter" onchange="displayStudents()">
+<option value="All">All Grades</option>
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<div id="list"></div>
+</div>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+let db=JSON.parse(localStorage.getItem(KEY))||{
+students:[],
+results:[],
+teachers:[],
+subjects:[],
+school:{}
+};
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(db));
+}
+
+function addStudent(){
+
+let admission=document.getElementById("adm").value.trim();
+let name=document.getElementById("name").value.trim();
+let gender=document.getElementById("gender").value;
+let grade=document.getElementById("grade").value;
+let parent=document.getElementById("parent").value.trim();
+
+if(!admission||!name||!gender||!grade){
+alert("Please complete all required fields.");
+return;
+}
+
+if(db.students.some(s=>s.admission===admission)){
+alert("Admission number already exists.");
+return;
+}
+
+db.students.push({
+admission:admission,
+name:name,
+gender:gender,
+grade:grade,
+parent:parent
+});
+
+save();
+
+document.getElementById("adm").value="";
+document.getElementById("name").value="";
+document.getElementById("gender").value="";
+document.getElementById("grade").value="";
+document.getElementById("parent").value="";
+
+displayStudents();
+
+alert("Student added successfully.");
+}
+
+function editStudent(i){
+
+let s=db.students[i];
+
+let name=prompt("Student name:",s.name);
+if(name===null)return;
+
+let gender=prompt("Gender:",s.gender);
+if(gender===null)return;
+
+let grade=prompt("Grade:",s.grade);
+if(grade===null)return;
+
+let parent=prompt("Parent phone:",s.parent||"");
+if(parent===null)return;
+
+s.name=name;
+s.gender=gender;
+s.grade=grade;
+s.parent=parent;
+
+save();
+displayStudents();
+}
+
+function removeStudent(i){
+
+let s=db.students[i];
+
+if(!confirm("Remove "+s.name+" from the student list?")){
+return;
+}
+
+db.students.splice(i,1);
+
+save();
+displayStudents();
+}
+
+function displayStudents(){
+
+let filter=document.getElementById("filter").value;
+
+let students=db.students.filter(s=>
+filter==="All"||s.grade===filter
+);
+
+students.sort((a,b)=>
+String(a.admission).localeCompare(
+String(b.admission),
+undefined,
+{numeric:true}
+)
+);
+
+if(students.length===0){
+
+document.getElementById("list").innerHTML=
+"<p>No students found.</p>";
+
+return;
+}
+
+let html=`
+<table>
+<tr>
+<th>#</th>
+<th>Admission</th>
+<th>Name</th>
+<th>Gender</th>
+<th>Grade</th>
+<th>Parent Phone</th>
+<th>Action</th>
+</tr>
+`;
+
+students.forEach(s=>{
+
+let i=db.students.indexOf(s);
+
+html+=`
+<tr>
+<td>${students.indexOf(s)+1}</td>
+<td>${s.admission}</td>
+<td>${s.name}</td>
+<td>${s.gender}</td>
+<td>${s.grade}</td>
+<td>${s.parent||""}</td>
+<td>
+<button onclick="editStudent(${i})">Edit</button>
+<button class="danger" onclick="removeStudent(${i})">Remove</button>
+</td>
+</tr>
+`;
+
+});
+
+html+="</table>";
+
+document.getElementById("list").innerHTML=html;
+}
+
+displayStudents();
+
+</script>
+
+</body>
+</html>
