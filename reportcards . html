@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report Cards - Shammah Mission School</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+margin:0;
+background:#eef7f1;
+color:#173b2a;
+}
+
+header{
+background:#087f3f;
+color:white;
+text-align:center;
+padding:18px;
+}
+
+main{
+max-width:1200px;
+margin:auto;
+padding:15px;
+}
+
+.card{
+background:white;
+padding:18px;
+margin-bottom:15px;
+border-radius:10px;
+box-shadow:0 2px 8px #0002;
+}
+
+select,button{
+padding:11px;
+margin:5px;
+border-radius:6px;
+}
+
+select{
+border:1px solid #aaa;
+width:30%;
+}
+
+button{
+border:0;
+background:#087f3f;
+color:white;
+cursor:pointer;
+}
+
+.report{
+background:white;
+max-width:800px;
+margin:20px auto;
+padding:30px;
+border:2px solid #087f3f;
+}
+
+.school{
+text-align:center;
+border-bottom:2px solid #087f3f;
+padding-bottom:15px;
+}
+
+.school h1{
+margin:5px;
+font-size:25px;
+}
+
+.school p{
+margin:5px;
+}
+
+.info{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px;
+margin:18px 0;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #777;
+padding:8px;
+}
+
+th{
+background:#087f3f;
+color:white;
+}
+
+.summary{
+margin-top:20px;
+}
+
+.remarks{
+margin-top:25px;
+}
+
+.signature{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:30px;
+margin-top:45px;
+}
+
+.line{
+border-top:1px solid #333;
+padding-top:6px;
+}
+
+@media(max-width:700px){
+select{width:100%}
+.report{padding:15px}
+.info{grid-template-columns:1fr}
+}
+
+@media print{
+body{background:white}
+header, .controls{display:none}
+.report{
+border:2px solid #000;
+margin:0;
+max-width:none;
+page-break-after:always;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>Report Card Management</p>
+</header>
+
+<main>
+
+<div class="card controls">
+
+<h2>Generate Report Card</h2>
+
+<select id="year">
+<option>2026</option>
+<option>2027</option>
+<option>2028</option>
+</select>
+
+<select id="term">
+<option>Term 1</option>
+<option>Term 2</option>
+<option>Term 3</option>
+</select>
+
+<select id="grade" onchange="loadStudents()">
+<option value="">Select Grade</option>
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<select id="student">
+<option value="">Select Student</option>
+</select>
+
+<br>
+
+<button onclick="generate()">GENERATE REPORT</button>
+
+<button onclick="printReport()">PRINT REPORT</button>
+
+<button onclick="printClass()">PRINT WHOLE CLASS</button>
+
+</div>
+
+<div id="reports"></div>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+let db=JSON.parse(localStorage.getItem(KEY))||{
+students:[],
+results:[],
+school:{
+name:"SHAMMAH MISSION SCHOOL",
+location:"Marakwet West, Kapsowar",
+email:"aicshammahschool2025@gmail.com",
+upi:""
+}
+};
+
+
+/* LOAD STUDENTS */
+
+function loadStudents(){
+
+let grade=document.getElementById("grade").value;
+
+let select=document.getElementById("student");
+
+select.innerHTML='<option value="">Select Student</option>';
+
+if(!grade)return;
+
+let students=db.students.filter(
+s=>s.grade===grade
+);
+
+students.sort((a,b)=>
+String(a.admission).localeCompare(
+String(b.admission),
+undefined,
+{numeric:true}
+)
+);
+
+students.forEach(s=>{
+
+let option=document.createElement("option");
+
+option.value=s.admission;
+
+option.textContent=
+s.admission+" - "+s.name;
+
+select.appendChild(option);
+
+});
+
+}
+
+
+/* GRADE */
+
+function grade(mark){
+
+mark=Number(mark);
+
+if(mark>=90)return"EE";
+if(mark>=50)return"ME";
+if(mark>=30)return"AE";
+return"BE";
+
+}
+
+
+/* GENERATE SINGLE REPORT */
+
+function generate(){
+
+let admission=document.getElementById("student").value;
+
+if(!admission){
+
+alert("Select a student.");
+
+return;
+}
+
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+
+let student=db.students.find(
+s=>s.admission===admission
+);
+
+if(!student)return;
+
+document.getElementById("reports").innerHTML=
+createReport(student,year,term);
+
+}
+
+
+/* CREATE REPORT */
+
+function createReport(student,year,term){
+
+let results=db.results.filter(r=>
+r.admission===student.admission &&
+r.year==year &&
+r.term===term &&
+r.published===true
+);
+
+results.sort((a,b)=>
+a.subject.localeCompare(b.subject)
+);
+
+
+let total=0;
+
+results.forEach(r=>{
+total+=Number(r.marks);
+});
+
+let mean=
+results.length?
+(total/results.length).toFixed(2):
+"0.00";
+
+
+let html=`
+
+<div class="report">
+
+<div class="school">
+
+<h1>${db.school?.name || "SHAMMAH MISSION SCHOOL"}</h1>
+
+<p>${db.school?.location || "Marakwet West, Kapsowar"}</p>
+
+<p>${db.school?.email || "aicshammahschool2025@gmail.com"}</p>
+
+${db.school?.upi?
+"<p><b>School UPI:</b> "+db.school.upi+"</p>":
+""}
+
+<h2>STUDENT REPORT CARD</h2>
+
+<p>
+<b>${term} - ${year}</b>
+</p>
+
+</div>
+
+
+<div class="info">
+
+<div>
+<b>Admission Number:</b><br>
+${student.admission}
+</div>
+
+<div>
+<b>Student Name:</b><br>
+${student.name}
+</div>
+
+<div>
+<b>Gender:</b><br>
+${student.gender}
+</div>
+
+<div>
+<b>Grade:</b><br>
+${student.grade}
+</div>
+
+</div>
+
+
+<table>
+
+<tr>
+<th>#</th>
+<th>Subject</th>
+<th>Marks</th>
+<th>Grade</th>
+<th>Comment</th>
+</tr>
+
+`;
+
+results.forEach((r,i)=>{
+
+html+=`
+
+<tr>
+
+<td>${i+1}</td>
+
+<td>${r.subject}</td>
+
+<td>${r.marks}</td>
+
+<td>${r.gradeResult || grade(r.marks)}</td>
+
+<td>${r.comment || ""}</td>
+
+</tr>
+
+`;
+
+});
+
+
+html+=`
+
+</table>
+
+
+<div class="summary">
+
+<h3>Overall Performance</h3>
+
+<p>
+<b>Total Subjects:</b> ${results.length}
+</p>
+
+<p>
+<b>General Mean:</b> ${mean}
+</p>
+
+</div>
+
+
+<div class="remarks">
+
+<h3>Class Teacher's Remark</h3>
+
+<p>
+____________________________________________________________
+</p>
+
+<p>
+____________________________________________________________
+</p>
+
+
+<h3>Head Teacher's Remark</h3>
+
+<p>
+____________________________________________________________
+</p>
+
+<p>
+____________________________________________________________
+</p>
+
+</div>
+
+
+<div class="signature">
+
+<div class="line">
+Class Teacher's Signature
+</div>
+
+<div class="line">
+Head Teacher's Signature
+</div>
+
+</div>
+
+</div>
+
+`;
+
+return html;
+
+}
+
+
+/* PRINT CURRENT */
+
+function printReport(){
+
+if(!document.getElementById("reports").innerHTML){
+
+alert("Generate a report first.");
+
+return;
+
+}
+
+window.print();
+
+}
+
+
+/* PRINT WHOLE CLASS */
+
+function printClass(){
+
+let grade=document.getElementById("grade").value;
+
+if(!grade){
+
+alert("Select a grade.");
+
+return;
+
+}
+
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+
+let students=db.students.filter(
+s=>s.grade===grade
+);
+
+students.sort((a,b)=>
+String(a.admission).localeCompare(
+String(b.admission),
+undefined,
+{numeric:true}
+)
+);
+
+if(students.length===0){
+
+alert("No students found.");
+
+return;
+
+}
+
+let html="";
+
+students.forEach(student=>{
+
+html+=createReport(
+student,
+year,
+term
+);
+
+});
+
+document.getElementById("reports").innerHTML=html;
+
+setTimeout(()=>{
+window.print();
+},300);
+
+}
+
+</script>
+
+</body>
+</html>
