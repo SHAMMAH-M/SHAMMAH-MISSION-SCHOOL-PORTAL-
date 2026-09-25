@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Backup - Shammah Mission School</title>
+<style>
+body{font-family:Arial;margin:0;background:#f1f8f4;color:#173b2a}
+header{background:#087f3f;color:white;text-align:center;padding:20px}
+main{max-width:700px;margin:auto;padding:15px}
+.card{background:white;padding:18px;margin:12px 0;border-radius:10px;box-shadow:0 2px 8px #bbb}
+button{width:100%;padding:13px;margin:7px 0;border:0;border-radius:7px;background:#087f3f;color:white}
+.red{background:#a51d2d}
+.blue{background:#1769aa}
+input{width:100%;padding:10px;box-sizing:border-box}
+small{display:block;margin-top:8px;color:#555}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>DATA BACKUP & RESTORE</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Backup School Data</h2>
+<p>Download a copy of the current students, teachers, subjects, results and settings.</p>
+
+<button onclick="backup()">
+⬇️ DOWNLOAD BACKUP
+</button>
+</div>
+
+<div class="card">
+<h2>Restore School Data</h2>
+
+<input type="file" id="file" accept=".json">
+
+<button class="blue" onclick="restore()">
+⬆️ RESTORE BACKUP
+</button>
+
+<small>
+Restoring will replace the current data stored in this browser.
+</small>
+</div>
+
+<div class="card">
+<h2>Data Information</h2>
+<div id="info"></div>
+</div>
+
+<button class="blue"
+onclick="location.href='portal.html'">
+← BACK TO DIRECTOR PORTAL
+</button>
+
+<button class="red" onclick="logout()">
+LOGOUT
+</button>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+function getDB(){
+
+let db=JSON.parse(
+localStorage.getItem(KEY)||"{}"
+);
+
+if(!db.students)db.students=[];
+if(!db.teachers)db.teachers=[];
+if(!db.subjects)db.subjects=[];
+if(!db.results)db.results=[];
+
+return db;
+}
+
+function backup(){
+
+let db=getDB();
+
+let data={
+backupDate:new Date().toISOString(),
+schoolData:db
+};
+
+let file=new Blob(
+[JSON.stringify(data,null,2)],
+{type:"application/json"}
+);
+
+let url=URL.createObjectURL(file);
+
+let a=document.createElement("a");
+
+a.href=url;
+a.download="SHAMMAH_SCHOOL_BACKUP.json";
+
+document.body.appendChild(a);
+a.click();
+a.remove();
+
+URL.revokeObjectURL(url);
+
+alert("Backup downloaded successfully.");
+}
+
+function restore(){
+
+let input=document.getElementById("file");
+
+if(!input.files.length){
+alert("Select a backup JSON file first.");
+return;
+}
+
+if(!confirm(
+"Restore this backup? Current browser data will be replaced."
+)){
+return;
+}
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+try{
+
+let data=JSON.parse(e.target.result);
+
+let db=data.schoolData || data;
+
+if(!db){
+throw new Error("Invalid backup");
+}
+
+localStorage.setItem(
+KEY,
+JSON.stringify(db)
+);
+
+alert("Backup restored successfully.");
+
+showInfo();
+
+}catch(error){
+
+alert("Invalid backup file.");
+
+}
+
+};
+
+reader.readAsText(input.files[0]);
+
+}
+
+function showInfo(){
+
+let db=getDB();
+
+document.getElementById("info").innerHTML=`
+
+<p><b>Students:</b> ${db.students.length}</p>
+
+<p><b>Teachers:</b> ${db.teachers.length}</p>
+
+<p><b>Subjects:</b> ${db.subjects.length}</p>
+
+<p><b>Results:</b> ${db.results.length}</p>
+
+`;
+
+}
+
+function logout(){
+
+sessionStorage.clear();
+
+location.href="index.html";
+
+}
+
+if(
+sessionStorage.getItem("shammahLoggedIn")!=="true" ||
+sessionStorage.getItem("shammahRole")!=="director"
+){
+location.href="index.html";
+}
+
+showInfo();
+
+</script>
+
+</body>
+</html>
