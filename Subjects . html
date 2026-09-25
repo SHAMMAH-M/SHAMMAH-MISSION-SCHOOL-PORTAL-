@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Subjects - Shammah Mission School</title>
+
+<style>
+body{
+font-family:Arial;
+margin:0;
+background:#f1f8f4;
+color:#173b2a;
+}
+header{
+background:#087f3f;
+color:white;
+padding:20px;
+text-align:center;
+}
+main{
+max-width:800px;
+margin:auto;
+padding:15px;
+}
+.card{
+background:white;
+padding:15px;
+margin:12px 0;
+border-radius:10px;
+box-shadow:0 2px 8px #bbb;
+}
+input,button{
+width:100%;
+padding:12px;
+margin:6px 0;
+box-sizing:border-box;
+}
+button{
+border:0;
+border-radius:6px;
+background:#087f3f;
+color:white;
+}
+.red{background:#a51d2d}
+.blue{background:#1769aa}
+.subject{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#eef7f1;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+}
+.subject button{
+width:auto;
+padding:8px 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>DIRECTOR — SUBJECT MANAGEMENT</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Add Subject</h2>
+
+<input id="newSubject"
+placeholder="Enter subject name">
+
+<button onclick="addSubject()">
+ADD SUBJECT
+</button>
+</div>
+
+<div class="card">
+<h2>Subjects</h2>
+
+<div id="subjects"></div>
+</div>
+
+<button class="blue"
+onclick="location.href='portal.html'">
+← BACK TO DIRECTOR PORTAL
+</button>
+
+<button class="red" onclick="logout()">
+LOGOUT
+</button>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+const defaultSubjects=[
+"Agriculture",
+"Mathematics",
+"English",
+"Kiswahili",
+"Integrated Science",
+"Pre/Tech",
+"CRE",
+"SST",
+"C/A"
+];
+
+function getDB(){
+
+let db=JSON.parse(
+localStorage.getItem(KEY)||"{}"
+);
+
+if(!db.subjects || !Array.isArray(db.subjects)){
+db.subjects=[...defaultSubjects];
+}
+
+localStorage.setItem(KEY,JSON.stringify(db));
+
+return db;
+}
+
+function saveDB(db){
+localStorage.setItem(KEY,JSON.stringify(db));
+}
+
+function addSubject(){
+
+let input=document.getElementById("newSubject");
+
+let name=input.value.trim();
+
+if(!name){
+alert("Enter subject name.");
+return;
+}
+
+let db=getDB();
+
+let exists=db.subjects.some(
+s=>s.toLowerCase()===name.toLowerCase()
+);
+
+if(exists){
+alert("Subject already exists.");
+return;
+}
+
+db.subjects.push(name);
+
+saveDB(db);
+
+input.value="";
+
+render();
+
+alert("Subject added successfully.");
+}
+
+function removeSubject(index){
+
+let db=getDB();
+
+let subject=db.subjects[index];
+
+if(!confirm(
+"Remove "+subject+"?"
+)) return;
+
+db.subjects.splice(index,1);
+
+saveDB(db);
+
+render();
+}
+
+function render(){
+
+let db=getDB();
+
+let box=document.getElementById("subjects");
+
+box.innerHTML="";
+
+if(db.subjects.length===0){
+box.innerHTML="<p>No subjects available.</p>";
+return;
+}
+
+db.subjects.forEach((subject,index)=>{
+
+box.innerHTML+=`
+<div class="subject">
+
+<span>
+<strong>${index+1}.</strong>
+${subject}
+</span>
+
+<button class="red"
+onclick="removeSubject(${index})">
+REMOVE
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+function logout(){
+
+sessionStorage.clear();
+
+location.href="index.html";
+
+}
+
+if(
+sessionStorage.getItem("shammahLoggedIn")!=="true" ||
+sessionStorage.getItem("shammahRole")!=="director"
+){
+location.href="index.html";
+}
+
+render();
+
+</script>
+
+</body>
+</html>
