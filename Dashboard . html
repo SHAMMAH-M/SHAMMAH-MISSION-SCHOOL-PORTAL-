@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Director Dashboard - Shammah Mission School</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#f1f8f4;
+color:#173b2a;
+}
+
+header{
+background:#087f3f;
+color:white;
+padding:22px 15px;
+text-align:center;
+}
+
+main{
+max-width:850px;
+margin:auto;
+padding:15px;
+}
+
+.card{
+background:white;
+padding:18px;
+margin:12px 0;
+border-radius:12px;
+box-shadow:0 2px 8px #bbb;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+}
+
+button{
+width:100%;
+padding:16px 8px;
+border:0;
+border-radius:9px;
+background:#087f3f;
+color:white;
+font-size:15px;
+}
+
+.logout{
+background:#a51d2d;
+}
+
+.number{
+font-size:28px;
+font-weight:bold;
+color:#087f3f;
+}
+
+@media(max-width:600px){
+.grid{
+grid-template-columns:1fr;
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>SHAMMAH MISSION SCHOOL</h1>
+
+<p>DIRECTOR / ADMIN CONTROL CENTER</p>
+
+</header>
+
+<main>
+
+<div class="card">
+
+<h2>School Overview</h2>
+
+<div class="grid">
+
+<div>
+Students
+<div class="number" id="students">0</div>
+</div>
+
+<div>
+Teachers
+<div class="number" id="teachers">0</div>
+</div>
+
+<div>
+Subjects
+<div class="number" id="subjects">0</div>
+</div>
+
+<div>
+Results
+<div class="number" id="results">0</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Management</h2>
+
+<div class="grid">
+
+<button onclick="go('students.html')">
+👨‍🎓 STUDENTS
+</button>
+
+<button onclick="go('teachers.html')">
+👩‍🏫 TEACHERS
+</button>
+
+<button onclick="go('subjects.html')">
+📚 SUBJECTS
+</button>
+
+<button onclick="go('results.html')">
+📝 RESULTS
+</button>
+
+<button onclick="go('analysis.html')">
+📊 ANALYSIS
+</button>
+
+<button onclick="go('reportcards.html')">
+📄 REPORT CARDS
+</button>
+
+<button onclick="go('settings.html')">
+⚙️ SCHOOL SETTINGS
+</button>
+
+<button onclick="go('backup.html')">
+💾 BACKUP / RESTORE
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>Academic Management</h2>
+
+<p>
+The Director can manage students, teachers, subjects,
+results, analysis, report cards, school information and
+backup data.
+</p>
+
+<button onclick="go('portal.html')">
+OPEN OLD DIRECTOR PORTAL
+</button>
+
+</div>
+
+
+<button class="logout" onclick="logout()">
+🚪 LOGOUT
+</button>
+
+</main>
+
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+function getDB(){
+
+let db=JSON.parse(
+localStorage.getItem(KEY)||"{}"
+);
+
+return db;
+
+}
+
+function updateCounts(){
+
+let db=getDB();
+
+document.getElementById("students").textContent=
+(db.students||[]).length;
+
+document.getElementById("teachers").textContent=
+(db.teachers||[]).length;
+
+document.getElementById("subjects").textContent=
+(db.subjects||[]).length;
+
+document.getElementById("results").textContent=
+(db.results||[]).length;
+
+}
+
+function go(page){
+
+location.href=page;
+
+}
+
+function logout(){
+
+sessionStorage.clear();
+
+location.href="index.html";
+
+}
+
+if(
+sessionStorage.getItem("shammahLoggedIn")!=="true" ||
+sessionStorage.getItem("shammahRole")!=="director"
+){
+
+location.href="index.html";
+
+}
+
+updateCounts();
+
+</script>
+
+</body>
+</html>
