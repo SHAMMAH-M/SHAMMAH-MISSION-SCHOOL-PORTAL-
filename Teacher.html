@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher | SHAMMAH MISSION SCHOOL</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f1f6f2;
+    color:#222;
+}
+
+header{
+    background:#075d1c;
+    color:white;
+    padding:18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+header h1{font-size:19px}
+header small{display:block;margin-top:5px}
+
+.logout{
+    background:#c62828;
+    color:white;
+    border:0;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:18px;
+}
+
+.nav{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.nav button{
+    border:0;
+    padding:11px 14px;
+    border-radius:8px;
+    background:white;
+    color:#075d1c;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:0 2px 7px #ccc;
+}
+
+.nav button.active{
+    background:#075d1c;
+    color:white;
+}
+
+.section{display:none}
+.section.active{display:block}
+
+.panel{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px #ddd;
+    margin-bottom:20px;
+}
+
+.panel h2{
+    color:#075d1c;
+    margin-bottom:16px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:15px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 3px 12px #ddd;
+}
+
+.card h3{
+    font-size:14px;
+    color:#666;
+}
+
+.number{
+    color:#075d1c;
+    font-size:28px;
+    font-weight:bold;
+    margin-top:7px;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:14px;
+}
+
+label{
+    display:block;
+    font-weight:bold;
+    font-size:14px;
+}
+
+select,input{
+    width:100%;
+    padding:11px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    margin-top:6px;
+    font-size:15px;
+}
+
+.action{
+    background:#075d1c;
+    color:white;
+    border:0;
+    padding:11px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.save{
+    background:#1565c0;
+    color:white;
+    border:0;
+    padding:10px 14px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+.publish{
+    background:#2e7d32;
+    color:white;
+    border:0;
+    padding:10px 14px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:700px;
+}
+
+th,td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+th{
+    background:#eaf4ec;
+    color:#075d1c;
+    text-align:left;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+.mark{
+    width:90px;
+}
+
+.grade{
+    font-weight:bold;
+}
+
+.info{
+    background:#edf7ef;
+    border-left:4px solid #075d1c;
+    padding:14px;
+    margin-bottom:18px;
+    border-radius:5px;
+}
+
+.empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+}
+
+.success{
+    color:#2e7d32;
+    font-weight:bold;
+}
+
+.warning{
+    color:#c77700;
+    font-weight:bold;
+}
+
+.danger{
+    color:#c62828;
+    font-weight:bold;
+}
+
+@media(max-width:600px){
+    header h1{font-size:16px}
+    .container{padding:12px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div>
+        <h1>SHAMMAH MISSION SCHOOL</h1>
+        <small>TEACHER PORTAL</small>
+    </div>
+
+    <button class="logout" onclick="logout()">
+        Logout
+    </button>
+
+</header>
+
+<div class="container">
+
+    <div class="nav">
+
+        <button
+            class="active"
+            onclick="showSection('overview',this)">
+            Overview
+        </button>
+
+        <button
+            onclick="showSection('marks',this)">
+            Enter Marks
+        </button>
+
+        <button
+            onclick="showSection('saved',this)">
+            Saved Results
+        </button>
+
+        <button
+            onclick="showSection('published',this)">
+            Published Results
+        </button>
+
+        <button
+            onclick="showSection('profile',this)">
+            My Profile
+        </button>
+
+    </div>
+
+
+    <!-- OVERVIEW -->
+
+    <section id="overview" class="section active">
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>My Allocations</h3>
+                <div class="number" id="allocationCount">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Saved Results</h3>
+                <div class="number" id="savedCount">0</div>
+            </div>
+
+            <div class="card">
+                <h3>Published Results</h3>
+                <div class="number" id="publishedCount">0</div>
+            </div>
+
+        </div>
+
+        <div class="panel" style="margin-top:20px">
+
+            <h2>Teacher Instructions</h2>
+
+            <div class="info">
+
+                Select only the class and subject allocated to you.
+                Enter marks and save them first.
+
+                <br><br>
+
+                <b>Important:</b> Results cannot be published
+                until they have been saved.
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ENTER MARKS -->
+
+    <section id="marks" class="section">
+
+        <div class="panel">
+
+            <h2>Enter Marks</h2>
+
+            <div class="form-grid">
+
+                <div>
+
+                    <label>Academic Year</label>
+
+                    <select id="year">
+                        <option>2026</option>
+                    </select>
+
+                </div>
+
+                <div>
+
+                    <label>Term</label>
+
+                    <select id="term">
+
+                        <option>Term 1</option>
+                        <option>Term 2</option>
+                        <option>Term 3</option>
+
+                    </select>
+
+                </div>
+
+                <div>
+
+                    <label>Class</label>
+
+                    <select id="grade"
+                            onchange="loadStudents()">
+
+                        <option value="">
+                            Select Grade
+                        </option>
+
+                        <option>Grade 7</option>
+                        <option>Grade 8</option>
+                        <option>Grade 9</option>
+
+                    </select>
+
+                </div>
+
+                <div>
+
+                    <label>Allocated Subject</label>
+
+                    <select id="allocation"
+                            onchange="loadStudents()">
+
+                        <option value="">
+                            Select allocation
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel">
+
+            <h2>Students and Marks</h2>
+
+            <div id="marksArea">
+
+                <div class="empty">
+                    Select your class and allocated subject.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SAVED -->
+
+    <section id="saved" class="section">
+
+        <div class="panel">
+
+            <h2>Saved Results</h2>
+
+            <div id="savedArea"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PUBLISHED -->
+
+    <section id="published" class="section">
+
+        <div class="panel">
+
+            <h2>Published Results</h2>
+
+            <div id="publishedArea"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+
+    <section id="profile" class="section">
+
+        <div class="panel">
+
+            <h2>My Profile</h2>
+
+            <p><b>Name:</b> <span id="teacherName"></span></p>
+
+            <p style="margin-top:10px">
+                <b>Phone:</b>
+                <span id="teacherPhone"></span>
+            </p>
+
+            <h3 style="margin-top:20px;color:#075d1c">
+                My Allocations
+            </h3>
+
+            <div id="myAllocations"
+                 style="margin-top:10px">
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+const DB_KEY =
+"SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+
+function getDatabase(){
+
+    let saved =
+        localStorage.getItem(DB_KEY);
+
+    if(saved){
+
+        return JSON.parse(saved);
+
+    }
+
+    return {
+        school:{},
+        users:[],
+        teachers:[],
+        students:[],
+        results:[],
+        subjects:[]
+    };
+}
+
+
+function saveDatabase(db){
+
+    localStorage.setItem(
+        DB_KEY,
+        JSON.stringify(db)
+    );
+
+}
+
+
+const currentUser =
+JSON.parse(
+    sessionStorage.getItem(
+        "shammahCurrentUser"
+    ) || "null"
+);
+
+
+let db = getDatabase();
+
+let teacher = null;
+
+
+/*
+ Find teacher.
+
+ If the current login is the original
+ teacher account, use Mr Kim.
+*/
+
+if(currentUser){
+
+    teacher =
+        db.teachers.find(
+            t => t.name === currentUser.name
+        );
+
+}
+
+if(!teacher){
+
+    teacher =
+        db.teachers.find(
+            t => t.name === "Mr Kim"
+        );
+}
+
+
+/*
+ If the database doesn't yet contain
+ teacher allocations, create them.
+*/
+
+if(db.teachers.length === 0){
+
+    db.teachers = [
+
+        {
+            name:"Mr Kim",
+            phone:"",
+            allocations:[
+                "Agriculture Grade 7",
+                "Agriculture Grade 8",
+                "Agriculture Grade 9",
+                "Pre/Tech Grade 7",
+                "Integrated Science Grade 7",
+                "Integrated Science Grade 8"
+            ]
+        },
+
+        {
+            name:"Md Keziah",
+            phone:"",
+            allocations:[
+                "Mathematics Grade 7",
+                "Mathematics Grade 8",
+                "Mathematics Grade 9",
+                "CRE Grade 7",
+                "CRE Grade 8",
+                "Integrated Science Grade 9"
+            ]
+        },
+
+        {
+            name:"Mr Collin's",
+            phone:"",
+            allocations:[
+                "English Grade 7",
+                "English Grade 8",
+                "English Grade 9",
+                "Pre/Tech Grade 8",
+                "Pre/Tech Grade 9",
+                "CRE Grade 9"
+            ]
+        },
+
+        {
+            name:"Mr Jonah",
+            phone:"",
+            allocations:[
+                "Kiswahili Grade 7",
+                "Kiswahili Grade 8",
+                "Kiswahili Grade 9",
+                "SST Grade 7",
+                "SST Grade 8",
+                "SST Grade 9"
+            ]
+        },
+
+        {
+            name:"Mr Kanda",
+            phone:"",
+            allocations:[
+                "C/A Grade 7",
+                "C/A Grade 8",
+                "C/A Grade 9"
+            ]
+        }
+
+    ];
+
+    saveDatabase(db);
+
+    teacher =
+        db.teachers[0];
+}
+
+
+function showSection(id,button){
+
+    document.querySelectorAll(".section")
+        .forEach(
+            s => s.classList.remove("active")
+        );
+
+    document.querySelectorAll(".nav button")
+        .forEach(
+            b => b.classList.remove("active")
+        );
+
+    document.getElementById(id)
+        .classList.add("active");
+
+    button.classList.add("active");
+
+    if(id === "saved"){
+        showSaved();
+    }
+
+    if(id === "published"){
+        showPublished();
+    }
+
+}
+
+
+function populateAllocations(){
+
+    const select =
+        document.getElementById("allocation");
+
+    select.innerHTML =
+        '<option value="">Select allocation</option>';
+
+    if(!teacher)return;
+
+    (teacher.allocations || [])
+        .forEach(function(allocation){
+
+            const option =
+                document.createElement("option");
+
+            option.value = allocation;
+            option.textContent = allocation;
+
+            select.appendChild(option);
+
+        });
+
+}
+
+
+function parseAllocation(value){
+
+    const match =
+        value.match(/^(.*?)\s+(Grade\s+[789])$/);
+
+    if(!match){
+
+        return null;
+
+    }
+
+    return {
+        subject:match[1],
+        grade:match[2]
+    };
+
+}
+
+
+function loadStudents(){
+
+    const allocation =
+        document.getElementById("allocation").value;
+
+    const grade =
+        document.getElementById("grade").value;
+
+    const area =
+        document.getElementById("marksArea");
+
+    if(!allocation || !grade){
+
+        area.innerHTML =
+            '<div class="empty">Select class and allocated subject.</div>';
+
+        return;
+
+    }
+
+    const parsed =
+        parseAllocation(allocation);
+
+    if(!parsed){
+
+        area.innerHTML =
+            '<div class="empty">Invalid allocation.</div>';
+
+        return;
+
+    }
+
+    if(parsed.grade !== grade){
+
+        area.innerHTML =
+            '<div class="empty">This subject is not allocated to this grade.</div>';
+
+        return;
+
+    }
+
+    const students =
+        db.students
+        .filter(
+            s => s.grade === grade
+        )
+        .sort(
+            (a,b) =>
+                String(a.admission)
+                .localeCompare(
+                    String(b.admission),
+                    undefined,
+                    {numeric:true}
+                )
+        );
+
+    if(students.length === 0){
+
+        area.innerHTML =
+            '<div class="empty">No students have been added to '+grade+' yet.</div>';
+
+        return;
+
+    }
+
+    let html = `
+
+        <div class="info">
+            <b>Subject:</b> ${escapeHTML(parsed.subject)}
+            &nbsp;&nbsp;
+            <b>Class:</b> ${escapeHTML(parsed.grade)}
+        </div>
+
+        <div class="table-wrap">
+
+        <table>
+
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Admission</th>
+                <th>Student Name</th>
+                <th>Marks / 100</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+
+        <tbody>
+    `;
+
+    students.forEach(function(student,index){
+
+        const existing =
+            findResult(
+                student.admission,
+                parsed.subject,
+                grade
+            );
+
+        const marks =
+            existing
+            ? existing.marks
+            : "";
+
+        const letter =
+            marks === ""
+            ? "-"
+            : calculateGrade(
+                Number(marks)
+            );
+
+        html += `
+
+            <tr>
+
+                <td>${index+1}</td>
+
+                <td>
+                    ${escapeHTML(student.admission)}
+                </td>
+
+                <td>
+                    ${escapeHTML(student.name)}
+                </td>
+
+                <td>
+
+                    <input
+                        class="mark"
+                        type="number"
+                        min="0"
+                        max="100"
+                        value="${marks}"
+                        data-admission="${escapeHTML(student.admission)}"
+                        oninput="updateGrade(this)"
+                    >
+
+                </td>
+
+                <td
+                    class="grade"
+                    id="grade-${safeId(student.admission)}"
+                >
+                    ${letter}
+                </td>
+
+            </tr>
+        `;
+
+    });
+
+    html += `
+
+        </tbody>
+        </table>
+
+        </div>
+
+        <br>
+
+        <button
+            class="action"
+            onclick="saveMarks()">
+            SAVE MARKS
+        </button>
+
+        <div id="saveMessage"
+             style="margin-top:12px">
+        </div>
+
+    `;
+
+    area.innerHTML = html;
+
+}
+
+
+function updateGrade(input){
+
+    let marks =
+        Number(input.value);
+
+    if(
+        input.value === "" ||
+        isNaN(marks)
+    ){
+
+        marks = null;
+
+    }
+
+    const cell =
+        document.getElementById(
+            "grade-" +
+            safeId(input.dataset.admission)
+        );
+
+    if(!cell)return;
+
+    if(marks === null){
+
+        cell.textContent = "-";
+
+        return;
+
+    }
+
+    cell.textContent =
+        calculateGrade(marks);
+
+}
+
+
+function calculateGrade(marks){
+
+    if(marks >= 90)return "EE";
+    if(marks >= 50)return "ME";
+    if(marks >= 30)return "AE";
+
+    return "BE";
+
+}
+
+
+function findResult(
+    admission,
+    subject,
+    grade
+){
+
+    const year =
+        document.getElementById("year").value;
+
+    const term =
+        document.getElementById("term").value;
+
+    return db.results.find(function(r){
+
+        return(
+            r.admission === admission &&
+            r.subject === subject &&
+            r.grade === grade &&
+            String(r.year) === String(year) &&
+            r.term === term
+        );
+
+    });
+
+}
+
+
+function saveMarks(){
+
+    const allocation =
+        document.getElementById("allocation").value;
+
+    const grade =
+        document.getElementById("grade").value;
+
+    const year =
+        document.getElementById("year").value;
+
+    const term =
+        document.getElementById("term").value;
+
+    const parsed =
+        parseAllocation(allocation);
+
+    if(!parsed){
+
+        alert("Invalid subject allocation.");
+
+        return;
+
+    }
+
+    const inputs =
+        document.querySelectorAll(
+            "#marksArea input.mark"
+        );
+
+    let saved = 0;
+
+    for(const input of inputs){
+
+        if(input.value === ""){
+
+            continue;
+
+        }
+
+        const marks =
+            Number(input.value);
+
+        if(
+            isNaN(marks) ||
+            marks < 0 ||
+            marks > 100
+        ){
+
+            alert(
+                "Marks must be between 0 and 100."
+            );
+
+            return;
+
+        }
+
+        const admission =
+            input.dataset.admission;
+
+        const existing =
+            findResult(
+                admission,
+                parsed.subject,
+                grade
+            );
+
+        if(existing){
+
+            /*
+            Published results should not be
+            silently overwritten by a teacher.
+            */
+
+            if(existing.published){
+
+                alert(
+                    "Some results are already published. Published marks require Director editing."
+                );
+
+                continue;
+
+            }
+
+            existing.marks = marks;
+            existing.gradeLetter =
+                calculateGrade(marks);
+
+            existing.saved = true;
+            existing.published = false;
+
+        }else{
+
+            db.results.push({
+
+                admission:admission,
+
+                subject:parsed.subject,
+
+                grade:grade,
+
+                marks:marks,
+
+                gradeLetter:
+                    calculateGrade(marks),
+
+                year:year,
+
+                term:term,
+
+                teacher:teacher
+                    ? teacher.name
+                    : "",
+
+                saved:true,
+
+                published:false,
+
+                subjectComment:""
+
+            });
+
+        }
+
+        saved++;
+
+    }
+
+    saveDatabase(db);
+
+    const msg =
+        document.getElementById(
+            "saveMessage"
+        );
+
+    msg.className = "success";
+
+    msg.textContent =
+        saved +
+        " result(s) saved successfully.";
+
+    refreshCounts();
+
+}
+
+
+function showSaved(){
+
+    db = getDatabase();
+
+    const area =
+        document.getElementById("savedArea");
+
+    const saved =
+        db.results.filter(
+            r =>
+                r.saved &&
+                !r.published &&
+                (!teacher ||
+                 r.teacher === teacher.name)
+        );
+
+    if(saved.length === 0){
+
+        area.innerHTML =
+            '<div class="empty">No saved unpublished results.</div>';
+
+        return;
+
+    }
+
+    let html = `
+
+        <div class="table-wrap">
+
+        <table>
+
+        <thead>
+            <tr>
+                <th>Admission</th>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Marks</th>
+                <th>Grade</th>
+                <th>Year</th>
+                <th>Term</th>
+            </tr>
+        </thead>
+
+        <tbody>
+    `;
+
+    saved.forEach(function(r){
+
+        html += `
+
+            <tr>
+
+                <td>${escapeHTML(r.admission)}</td>
+
+                <td>${escapeHTML(r.subject)}</td>
+
+                <td>${escapeHTML(r.grade)}</td>
+
+                <td>${r.marks}</td>
+
+                <td>${escapeHTML(r.gradeLetter)}</td>
+
+                <td>${escap
