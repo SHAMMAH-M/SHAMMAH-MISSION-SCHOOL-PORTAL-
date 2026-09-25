@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shammah Mission School Portal</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#eef7f1;
+display:flex;
+align-items:center;
+justify-content:center;
+min-height:100vh;
+color:#173b2a;
+}
+
+.box{
+width:90%;
+max-width:420px;
+background:white;
+padding:25px;
+border-radius:15px;
+box-shadow:0 4px 15px #aaa;
+text-align:center;
+}
+
+.logo{
+width:100px;
+height:100px;
+margin:auto;
+border-radius:50%;
+background:#087f3f;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
+font-weight:bold;
+}
+
+h1{
+color:#087f3f;
+font-size:24px;
+}
+
+input{
+width:100%;
+padding:13px;
+margin:8px 0;
+box-sizing:border-box;
+border:1px solid #bbb;
+border-radius:7px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:0;
+border-radius:7px;
+background:#087f3f;
+color:white;
+font-size:16px;
+}
+
+.teacher{
+background:#1769aa;
+}
+
+.message{
+margin-top:12px;
+font-weight:bold;
+}
+
+.footer{
+margin-top:20px;
+font-size:12px;
+color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="logo">SMS</div>
+
+<h1>SHAMMAH MISSION SCHOOL</h1>
+
+<p><b>PORTAL LOGIN</b></p>
+
+<input id="username"
+placeholder="Username">
+
+<input id="password"
+type="password"
+placeholder="Password">
+
+<button onclick="login('director')">
+DIRECTOR / ADMIN LOGIN
+</button>
+
+<button class="teacher"
+onclick="login('teacher')">
+TEACHER LOGIN
+</button>
+
+<div id="message" class="message"></div>
+
+<div class="footer">
+Marakwet West, Kapsowar
+</div>
+
+</div>
+
+<script>
+
+function login(role){
+
+let username=
+document.getElementById("username").value.trim();
+
+let password=
+document.getElementById("password").value;
+
+if(role==="director"){
+
+if(username==="admin" && password==="admin123"){
+
+sessionStorage.setItem(
+"shammahLoggedIn","true"
+);
+
+sessionStorage.setItem(
+"shammahRole","director"
+);
+
+sessionStorage.setItem(
+"shammahUser","admin"
+);
+
+location.href="dashboard.html";
+
+return;
+
+}
+
+}
+
+if(role==="teacher"){
+
+if(username==="teacher" && password==="teacher123"){
+
+sessionStorage.setItem(
+"shammahLoggedIn","true"
+);
+
+sessionStorage.setItem(
+"shammahRole","teacher"
+);
+
+sessionStorage.setItem(
+"shammahUser","teacher"
+);
+
+location.href="teacher.html";
+
+return;
+
+}
+
+}
+
+document.getElementById("message").textContent=
+"Invalid username or password.";
+
+}
+
+</script>
+
+</body>
+</html>
