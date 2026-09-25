@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Results - Shammah Mission School</title>
+<style>
+body{font-family:Arial;margin:0;background:#f1f8f4;color:#173b2a}
+header{background:#087f3f;color:#fff;text-align:center;padding:18px}
+main{padding:15px;max-width:1200px;margin:auto}
+.card{background:#fff;padding:18px;margin-bottom:15px;border-radius:10px;box-shadow:0 2px 8px #0002}
+select,input{padding:10px;margin:5px;width:calc(100% - 20px);border:1px solid #bbb;border-radius:6px}
+button{padding:10px 15px;border:0;border-radius:6px;background:#087f3f;color:#fff;margin:4px}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{border:1px solid #ddd;padding:8px}
+th{background:#087f3f;color:#fff}
+@media(max-width:700px){table{font-size:12px}}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SHAMMAH MISSION SCHOOL</h1>
+<p>Results Management</p>
+</header>
+
+<main>
+
+<div class="card">
+<h2>Results Entry</h2>
+
+<select id="year">
+<option>2026</option>
+<option>2027</option>
+<option>2028</option>
+</select>
+
+<select id="term">
+<option>Term 1</option>
+<option>Term 2</option>
+<option>Term 3</option>
+</select>
+
+<select id="grade">
+<option value="">Select Grade</option>
+<option>Grade 7</option>
+<option>Grade 8</option>
+<option>Grade 9</option>
+</select>
+
+<select id="subject">
+<option value="">Select Subject</option>
+<option>Agriculture</option>
+<option>Mathematics</option>
+<option>English</option>
+<option>Kiswahili</option>
+<option>Integrated Science</option>
+<option>Pre/Tech</option>
+<option>CRE</option>
+<option>SST</option>
+<option>C/A</option>
+</select>
+
+<button onclick="loadStudents()">LOAD STUDENTS</button>
+</div>
+
+<div id="area"></div>
+
+</main>
+
+<script>
+
+const KEY="SHAMMAH_MISSION_SCHOOL_DATABASE";
+
+let db=JSON.parse(localStorage.getItem(KEY))||{
+students:[],
+results:[]
+};
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(db));
+}
+
+function grade(mark){
+
+mark=Number(mark);
+
+if(mark>=90)return"EE";
+if(mark>=50)return"ME";
+if(mark>=30)return"AE";
+return"BE";
+}
+
+function loadStudents(){
+
+let g=document.getElementById("grade").value;
+let subject=document.getElementById("subject").value;
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+
+if(!g||!subject){
+alert("Select Grade and Subject.");
+return;
+}
+
+let students=db.students.filter(s=>s.grade===g);
+
+students.sort((a,b)=>
+String(a.admission).localeCompare(
+String(b.admission),undefined,{numeric:true}
+));
+
+if(students.length===0){
+document.getElementById("area").innerHTML=
+'<div class="card"><p>No students found.</p></div>';
+return;
+}
+
+let html=`
+<div class="card">
+<h2>${subject} - ${g}</h2>
+
+<table>
+<tr>
+<th>#</th>
+<th>Admission</th>
+<th>Name</th>
+<th>Marks</th>
+<th>Grade</th>
+</tr>
+`;
+
+students.forEach((s,i)=>{
+
+let r=db.results.find(x=>
+x.admission===s.admission &&
+x.subject===subject &&
+x.grade===g &&
+x.year===year &&
+x.term===term
+);
+
+let marks=r?r.marks:"";
+
+html+=`
+<tr>
+<td>${i+1}</td>
+<td>${s.admission}</td>
+<td>${s.name}</td>
+<td>
+<input
+type="number"
+min="0"
+max="100"
+id="m_${s.admission}"
+value="${marks}"
+oninput="showGrade('${s.admission}')">
+</td>
+<td id="g_${s.admission}">
+${marks!==""?grade(marks):""}
+</td>
+</tr>
+`;
+});
+
+html+=`
+</table>
+
+<br>
+<button onclick="saveResults()">SAVE RESULTS</button>
+<button onclick="publishResults()">PUBLISH RESULTS</button>
+
+</div>
+`;
+
+document.getElementById("area").innerHTML=html;
+}
+
+function showGrade(admission){
+
+let input=document.getElementById("m_"+admission);
+
+let value=input.value;
+
+document.getElementById("g_"+admission).innerText=
+value===""?"":grade(value);
+}
+
+function saveResults(){
+
+let g=document.getElementById("grade").value;
+let subject=document.getElementById("subject").value;
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+
+let students=db.students.filter(s=>s.grade===g);
+
+students.forEach(s=>{
+
+let input=document.getElementById("m_"+s.admission);
+
+if(!input||input.value==="")return;
+
+let marks=Number(input.value);
+
+let r=db.results.find(x=>
+x.admission===s.admission &&
+x.subject===subject &&
+x.grade===g &&
+x.year===year &&
+x.term===term
+);
+
+if(r){
+
+if(r.published){
+return;
+}
+
+r.marks=marks;
+r.gradeResult=grade(marks);
+r.saved=true;
+
+}else{
+
+db.results.push({
+admission:s.admission,
+student:s.name,
+grade:g,
+subject:subject,
+marks:marks,
+gradeResult:grade(marks),
+year:year,
+term:term,
+saved:true,
+published:false,
+comment:""
+});
+
+}
+
+});
+
+save();
+
+alert("Results saved successfully.");
+}
+
+function publishResults(){
+
+let g=document.getElementById("grade").value;
+let subject=document.getElementById("subject").value;
+let year=document.getElementById("year").value;
+let term=document.getElementById("term").value;
+
+let found=false;
+
+db.results.forEach(r=>{
+
+if(
+r.grade===g &&
+r.subject===subject &&
+r.year===year &&
+r.term===term &&
+r.saved===true
+){
+
+r.published=true;
+found=true;
+
+}
+
+});
+
+if(!found){
+
+alert("Save results first before publishing.");
+return;
+}
+
+save();
+
+alert("Results published successfully.");
+}
+
+</script>
+
+</body>
+</html>
